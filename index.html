@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Cuzzie Vocabulary Assessment</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #c0392b;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #e9ecef;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 20px;
+        }
+
+        h1 { color: var(--primary-color); margin: 0; }
+        .subtitle { color: #7f8c8d; font-style: italic; }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-block {
+            margin-bottom: 20px;
+            padding: 25px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        .question-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .badge-context { background-color: #e67e22; }
+        .badge-def { background-color: #8e44ad; }
+
+        .question-text {
+            font-size: 1.15em;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-label:hover {
+            background-color: #e2e6ea;
+            border-color: var(--accent-color);
+        }
+
+        input[type="radio"] { margin-right: 12px; transform: scale(1.2); }
+
+        .controls {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-prev { background-color: #95a5a6; color: white; }
+        .btn-next { background-color: var(--accent-color); color: white; }
+        .btn-submit { background-color: var(--success-color); color: white; }
+        
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--accent-color);
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        /* Result Styles */
+        .correct { border-color: var(--success-color); background-color: #e8f5e9; }
+        .incorrect { border-color: var(--error-color); background-color: #fce4ec; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .container { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Cuzzie Class SAT Prep</h1>
+        <p class="subtitle">Complete Vocabulary Assessment (324 Questions)</p>
+        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+        <div id="stats" style="margin-top:10px; font-weight:bold;">Page 1</div>
+    </header>
+
+    <div id="quiz-container">
+        </div>
+
+    <div class="controls">
+        <button id="btn-prev" class="btn-prev" onclick="changePage(-1)">Previous</button>
+        <div id="score-readout" style="align-self:center; font-weight:bold; display:none;"></div>
+        <button id="btn-next" class="btn-next" onclick="changePage(1)">Next</button>
+        <button id="btn-submit" class="btn-submit" onclick="gradeCurrentPage()" style="display:none;">Check Answers</button>
+    </div>
+</div>
+
+<script>
+    // --- DATABASE OF 162 WORDS ---
+    const vocabularyDB = [
+        { w: "Votive", d: "Consisting of or expressing a vow, wish, or desire; offered in gratitude.", s: "Though us cuzzies are not secular, the perfunctory ________ of sweets at temples always seems to just get devoured after offered to God." },
+        { w: "Pollyannaish", d: "Having an excessively optimistic and cheerful nature, especially to the point of being unrealistic.", s: "It would be ________ to believe that the Gouds were going to fly over to see Nani on her birthday, but we can dream!" },
+        { w: "Malfeasance", d: "Wrongdoing, especially by a public official.", s: "If our inimitable sentence doesn’t win, we will consider it an act of ________ committed by the arbiter and potentate of cuzzie class." },
+        { w: "Ubiquitous", d: "Present or found everywhere.", s: "Zealots and anathemas like Jerky Joe seem to be ________ during cuzzie week— somehow we manage to find them lurking everywhere!" },
+        { w: "Garrulous", d: "Excessively talkative.", s: "It was tragicomic that when Nani joined the zoom call, she was the opposite of ________; all we could hear was a cacophony of distorted Nani!" },
+        { w: "Lionize", d: "To treat as an object of great interest or importance.", s: "We always adulate nani, but we especially ________ her on her birthday!!" },
+        { w: "Fetid", d: "Smelling extremely unpleasant.", s: "Unlike Aria’s ________ room, Nani’s house smells amazing." },
+        { w: "Occam’s razor", d: "Principle stating the simplest explanation with fewest assumptions is usually correct.", s: "Instead of a complex muscle disorder, ________ would pose the possibility that the culprit was simply her fractured knee." },
+        { w: "Despot", d: "A ruler with absolute power; one exercising power tyrannically.", s: "Jerky Joe acted like a ________ and tried to establish hegemony over the cuzzies when he demanded praise for getting the cuzzies a water bottle." },
+        { w: "Macabre", d: "Disturbing and horrifying because of involvement with or depiction of death and injury.", s: "The cuzzies were unfazed by the ________ horror movie, but stared screaming in terror the second they heard Din Tai Fung was closing." },
+        { w: "Preternatural", d: "Exceeding what is natural or regular; extraordinary.", s: "Not to aggrandize the cuzzies's feats, but some may consider our vernacular ________ for our age." },
+        { w: "Iconoclast", d: "A person who attacks or criticizes cherished beliefs or institutions.", s: "The cuzzies were stunned when masa told them about an ________ at work who thought that both oasis and the smashing pumpkins were bad." },
+        { w: "Tragicomic", d: "Manifesting both tragic and comic aspects.", s: "The cuzzies found it quite ________ when Henry rendered the waterslide at Wild Rivers defunct with his corpulent ankles." },
+        { w: "Vox populi", d: "The voice of the people.", s: "An example of the ________ in Boston is the wall of notes in the WNDR museum." },
+        { w: "Lingua franca", d: "A common language used among peoples of diverse speech.", s: "Though the cuzzies ________ is English, they still like to enhance their vernacular with other vocab words." },
+        { w: "Inimitable", d: "So good or unusual as to be impossible to copy; unique.", s: "The ________ cuzzies aced their vocabulary class." },
+        { w: "Supplicant", d: "A person making a humble or earnest plea to someone in power.", s: "We were acting like ________ towards Lady Montegu when we started being really saccharine so she would take us to Pinkberry." },
+        { w: "Infamous", d: "Having a reputation of the worst kind; notoriously evil.", s: "Over time, the neighbor has built up an ________ reputation amongst the residents for his truculent behavior." },
+        { w: "Erstwhile", d: "Former; previous.", s: "It seems as though the ________ cuzzie trips involved a lot more drama, and now, the people we meet seem so banal." },
+        { w: "Pyrrhic victory", d: "A success achieved at such a devastating cost that it amounts to a defeat.", s: "Marty Masa's hair transplant can be considered a ________, as he gained hair follicles at the cost of 15,000 dollars." },
+        { w: "Hawkish", d: "Advocating an aggressive or warlike policy.", s: "Ponytail puller's ________ actions turned the Cuzzies against the truculent little kid." },
+        { w: "Boondoggle", d: "A wasteful or impractical project.", s: "Some might say that the cuzzies’ plan to visit all 50 states is a ________, but thanks to Nani’s benevolence we will have enough money!" },
+        { w: "Fastidious", d: "Extremely or excessively careful or detailed.", s: "Though it may seem that we were very ________ in choosing RSM classes, it was pure serendipity that we ended up in the same class." },
+        { w: "Perfunctory", d: "Characterized by routine or superficiality; lacking in interest.", s: "Going through security in Downtown Disney can seem ________, when all that you want to do is go to Din Tai Fung." },
+        { w: "Dour", d: "Stern, joyless.", s: "The cuzzies were ________ after they spent 3 days straight in boda borg because they only won Farm!" },
+        { w: "Carpe diem", d: "Seize the day.", s: "Even though cuzzie week is technically only four days this year, we are determined to ________ and get the most out of our time!" },
+        { w: "Veni, vidi, vici", d: "I came, I saw, I conquered.", s: "While Jerky Joe thought his soliloquy was a ________ moment, the cuzzies knew he was just an acerbic old man." },
+        { w: "Secular", d: "Denoting attitudes or activities that have no religious or spiritual basis.", s: "Although the cuzzies are pretty ________, we still consider cuzzie week a religious experience!" },
+        { w: "Nihilism", d: "The rejection of all religious and moral principles, in the belief that life is meaningless.", s: "Akshay developed a sense of ________ after he learned that he was allergic to the chocolate dumplings." },
+        { w: "Meritocracy", d: "A system in which people are chosen based on their demonstrated abilities and merit.", s: "The esteemed Harvard Summer Medical Program obviously chose our sigma cousin Jaya on the basis of ________." },
+        { w: "Paltry", d: "Small or meager or petty; trivial.", s: "We would like to file a complaint that the ________ portion of chocolate dumplings is not enough to mollify the cuzzies." },
+        { w: "Gourmand", d: "Someone fond of eating and drinking.", s: "The cuzzies are ________ when it comes to Din Tai Fung and Wagamamas." },
+        { w: "Hegemony", d: "Domination over others.", s: "The cuzzies ________ over the other players at boda borg began when they conquered Jungle." },
+        { w: "Gratuitous", d: "Uncalled for, unwarranted.", s: "It seems that every time that we overfill a car, the police force sends a ________ amount of patrol vehicles at us." },
+        { w: "Sagacity", d: "Shrewdness, soundness of perspective.", s: "Although the cuzzies are usually known for their ________, we had a rare moment of not being perspicacious when we wasted polaroid film." },
+        { w: "Hyperbole", d: "Extravagant exaggeration.", s: "Akshay said there were a million police cars following us, but that was definitely ________—we didn’t even get pulled over!" },
+        { w: "Shambolic", d: "Obviously disorganized or confused.", s: "The other team was unbelievably ________ while putting together their sentence—they did not display sagacity." },
+        { w: "Maelstrom", d: "A destructive whirlpool which rapidly sucks in objects.", s: "When it comes to Din Tai Fung, the cuzzies ability to eat is comparable to a ________." },
+        { w: "Rebuke", d: "To scold, criticize.", s: "When Jerky Joe attempted to ________ us for not telling him 'thank you,' our saccharine comebacks did not placate him." },
+        { w: "Convivial", d: "Characterized by feasting, drinking, merriment.", s: "Wagimama’s ________ atmosphere made the dining experience even better." },
+        { w: "Corpulence", d: "Extreme fatness.", s: "Despite the scooter lady’s ________, she managed to trudge to the front of the line and knock everyone over." },
+        { w: "Apocryphal", d: "Of doubtful authenticity, although widely circulated as being true.", s: "There is an ________ story about the cuzzies using backgrounds and filters during class, but it can’t be true." },
+        { w: "Consign", d: "Deliver (something) to a person's custody, typically in order for it to be sold.", s: "Nipa Masi ________ her milanos to Gunj Mama so he could sell them to Reena masi." },
+        { w: "Intransigent", d: "Unwilling or refusing to change one's views.", s: "Henry’s group of friends were ________ in their quixotic belief that they could do math." },
+        { w: "Ostracize", d: "Exclusion from a group.", s: "Everyone decided to ________ Sumanta Fua after he had a severe episode of flatulence at the table." },
+        { w: "Discreet", d: "Careful not to cause embarrassment or attract too much attention; secretive.", s: "The cuzzies had to be very ________ when going into Disneyland, because no one could find out their real ages." },
+        { w: "Discrete", d: "Clearly separate or different in shape or form.", s: "When Henry's friends talked about him, it seemed that he has 2 ________ identities, acting like a 14 and 12 year old." },
+        { w: "Avant garde", d: "New and unusual or experimental ideas, especially in the arts.", s: "Inside Out 3 was a very ________ film, as it combined Britpop and the cuzzies acting skills into an esoteric masterpiece." },
+        { w: "Non sequitur", d: "A conclusion or statement that does not logically follow from the previous argument.", s: "The pony tail puller’s soliloquy was full of ________ including discussion of arson, death and ponytail pulling." },
+        { w: "Coup d'état", d: "A sudden, violent, and unlawful seizure of power from a government.", s: "There was a ________ when Aria threw chairs at everyone and claimed power as the potentate of the world." },
+        { w: "Zealot", d: "A person who is fanatical and uncompromising in pursuit of their ideals.", s: "Jerky Joe was a grumpy old ________, and could not stop his soliloquy about how we should get water at the front." },
+        { w: "Mercurial", d: "Characterized by rapid change or temperamentality.", s: "Aria’s ________ temperament was super hard to keep up with so her soliloquys were always very capricious." },
+        { w: "Solipsistic", d: "Believing that oneself is all that exists.", s: "The scooter lady was the most ________ person we ever met – she ran over all our feet just so she could be first!" },
+        { w: "Parsimonious", d: "Unwilling to spend money or use resources; stingy or frugal.", s: "Jaya said to Nipa Masi, 'Do not be ________!' after she said she could not get a Lululemon sweater." },
+        { w: "Abstruse", d: "Difficult to understand; obscure.", s: "Aarav’s ________ Indian accent reminded Aria of a 2-year-old losing her teeth." },
+        { w: "Apathetic", d: "Showing little or no emotion or animation.", s: "The scooter lady at Disneyland was ________ to the fact that there were children that she raced around." },
+        { w: "Defunct", d: "No longer in force or use; inactive.", s: "Henry’s legs were ________ after he broke the water slide with his chunky ankles." },
+        { w: "Incontrovertible", d: "Impossible to deny or disprove.", s: "It’s ________ that the cuzzie band deserves to be in the rock and roll hall of fame – we slay!" },
+        { w: "Mendacious", d: "Not telling the truth; lying.", s: "Reena Masi politely asked Gunj Mama, 'Are you being ________?' after he denied stealing a Milano cookie." },
+        { w: "Quandary", d: "A state of perplexity or doubt.", s: "The cuzzies were in a ________ whether to order avocado rolls or veggie ramen from Chubby Sushi." },
+        { w: "Circumvent", d: "To manage to get around especially by ingenuity or stratagem.", s: "The mean boys at Wild Rivers tried to ________ the lines by making up a story about Henry." },
+        { w: "Conflagration", d: "A large disastrous fire or a conflict or war.", s: "The Inconquista was considered the worlds longest ________, with a duration of almost 800 years!" },
+        { w: "Nadir", d: "The lowest point.", s: "Aria’s head was too small and the Pinkberry cup was too big so she could not reach the ________ of the cup." },
+        { w: "Neophyte", d: "A novice or a beginner.", s: "Henry and his friends are ________ when it comes to debating." },
+        { w: "Avarice", d: "Excessive or insatiable desire for wealth or gain.", s: "When the house is stocked with Milanos, two people are known to demonstrate ________." },
+        { w: "Soliloquy", d: "The act of talking to oneself; a dramatic monologue.", s: "Akshay couldn’t stop his ________ about his fear about the Dumbo ride because the elephants were wearing clothes." },
+        { w: "Penultimate", d: "Next to the last.", s: "Though Aarav was trying to convince Reena Masi, she was the ________ person in line so they were stuck." },
+        { w: "Esoteric", d: "Intended for or understood by only a small number of people with specialized knowledge.", s: "The words in cuzzie class are so ________ that only people that slay like the cuzzies can understand them." },
+        { w: "Zeitgeist", d: "The defining spirit or mood of a particular period of history.", s: "The cuzzies captured the ________ of the early 2020s when they walked down the stairs from Hangtime." },
+        { w: "Banal", d: "Lacking originality, freshness, or novelty.", s: "As you can see from Akshay and Aarav’s faces, the ice cream was very ________, lacking any really new or different taste." },
+        { w: "Anachronistic", d: "A chronological misplacing of persons, events, objects, or customs.", s: "Henry's friend's remarks were ________, as they said his birthday was that day, but apparently it was also on a leap year!" },
+        { w: "Benevolent", d: "Marked by goodness or doing good.", s: "Reena Masi should be praised for her ________ actions in protecting all of the cuzzies from the evil scooter lady." },
+        { w: "Sacrosanct", d: "Holy; something that should not be criticized.", s: "Aarav and Kaiya’s math facts should have been considered ________ – we didn’t understand why Henry’s friends doubted them." },
+        { w: "Abet", d: "Encourage or assist (someone) to do something wrong, in particular, to commit a crime.", s: "Gunj Mama was not guilty of stealing, but he was guilty in aiding and ________ Reena Masi in her mission of stealing Milanos." },
+        { w: "Ignominious", d: "Humiliating, disgracing.", s: "It was ________ for Henry’s friends when the two nice ladies put them back in line." },
+        { w: "Largess", d: "The generous giving of lavish gifts.", s: "Gunj Mama was trying to demonstrate ________ by giving Reena Masi Milanos, but he ate them all first." },
+        { w: "Nascent", d: "In the process of being born or coming into existence.", s: "Jaya’s brilliant college application is only in its ________ form right now." },
+        { w: "Amalgamate", d: "Combine or unite to form one organization or structure.", s: "If Reena Masi and Gunj Mama ________ their Milano devouring skills, they would totally slay an eating competition." },
+        { w: "Recapitulate", d: "Summarize and state again the main points of.", s: "After the cuzzies had interesting experiences, they couldn’t stop ________ their experiences when they chatted on the phone." },
+        { w: "Truculent", d: "Aggressively self-assertive; ready to fight, cruel.", s: "The ________ emu at the petting zoo aggressively chomped the veggies out of our hands." },
+        { w: "Orthodox", d: "Conventional, conforming to established protocol or doctrine.", s: "The apathetic RSM teacher took an ________ approach to teach the cuzzies math; it did NOT slay!" },
+        { w: "Pejorative", d: "Having negative connotations; intended to disparage.", s: "The line 'need to poop, drink this goop' might be a ________ way to describe the quality of the green juice." },
+        { w: "Capricious", d: "Impulsive or unpredictable.", s: "The ________ yeti on the ride at Disneyland kept jumping out and scaring all the cuzzies." },
+        { w: "Vernacular", d: "The language or dialect spoken by the ordinary people in a particular region.", s: "'What do you think of this?' has become a part of Gunj Mama's everyday ________." },
+        { w: "Coup", d: "A brilliant, unexpected act OR a government and assumption of authority.", s: "It was a ________ when Gunj Mama received the beautiful gift of Milanos from Reena Masi." },
+        { w: "Potentate", d: "One who has great power, a ruler.", s: "Gunj Mama strolled into the pantry like a ________ as he hunted like a hungry wolf for the hidden Milanos." },
+        { w: "Rancor", d: "Deep, bitter resentment.", s: "It was easy to see Aria’s feeling of ________ after Aarav beat her in a game of Boomerang Fu." },
+        { w: "Rescind", d: "To cancel or to take back.", s: "Costco decided to ________ Gunj Mama and Reena Masi’s membership after they learned that they stole Milanos." },
+        { w: "Docile", d: "Easily taught; easily led or managed.", s: "It would be mendacious to say that Aria was a ________ child – she demanded Starbucks at every meal." },
+        { w: "Polemic", d: "An aggressive attack on or refutation of the opinions or principles of another.", s: "Aria launched into a ________ after Masi said that she couldn’t spend the $500 on a Lulu Lemon Bag." },
+        { w: "Obfuscate", d: "To make obscure or hard to understand.", s: "Aarav didn’t want anyone to know that he spilled the brownie batter, so he ________ the truth by telling a long story." },
+        { w: "Clemency", d: "Mercy; lenience.", s: "I showed ________ to the perpetrators that stole my umbrella – I only gave them a scolding." },
+        { w: "Sanctimonious", d: "Making a show of being morally superior to other people.", s: "The mommies act ________ when it comes to their diet, but we all know they sneak in lots of ice cream at night!" },
+        { w: "Incorrigible", d: "Incapable of correction, delinquent.", s: "Aria's teeth were protected from her ________ habit of biting her nails, since she got braces." },
+        { w: "Placate", d: "To ease the anger of, soothe.", s: "After Akshay ate the last Milano cookie, Gunj Mama was impossible to ________." },
+        { w: "Quixotic", d: "Foolishly impractical especially in the pursuit of ideals.", s: "Henry’s idea to cut the line at Wild Rivers was ________, since everyone knows what happens when you mess with the cuzzies." },
+        { w: "Platitude", d: "A banal, trite, or stale remark.", s: "The cuzzies were tired of hearing Reena Masi’s familiar ________ on why Milano cookies are the best in the world." },
+        { w: "Clairvoyant", d: "Able to perceive things that normal people cannot.", s: "The cuzzies were ________ when they knew that Jaya would have fun on Hangtime." },
+        { w: "Ephemeral", d: "Short-lived, fleeting.", s: "Although the cuzzies spent 12 hours at Disneyland, the experience still felt ________ since they were having so much fun." },
+        { w: "Panacea", d: "A remedy for all ills or difficulties.", s: "Reena Masi feels that Milano cookies are a ________ – she eats them whenever she’s feeling low!" },
+        { w: "Linchpin", d: "Something that holds separate parts together.", s: "The ________ of the cuzzies case against Henry was the video evidence they had of him cutting in line." },
+        { w: "Sophomoric", d: "Immature, uninformed.", s: "Jerky Joe, truculent, childish and ________, couldn’t stop his soliloquy on how we shouldn’t get water at the front desk." },
+        { w: "Quotidian", d: "Daily; occurring every day or ordinary.", s: "Cuzzie week follows the ________ pattern of doing crazy things; in fact, it would be unorthodox if everything went as planned." },
+        { w: "Saccharine", d: "Sickeningly sweet.", s: "Even though Sumanta Masa tried to placate us with ________ praises after we lost the vocab competition, we were still extremely truculent." },
+        { w: "Umbrage", d: "Offense or annoyance.", s: "We took ________ at Jerky Joe when he went on a soliloquy about how we shouldn’t get water at the front desk." },
+        { w: "Archetypal", d: "The most representative or typical example of something.", s: "Henry’s friends were just ________ teenagers; they acted like solipsistic potentates." },
+        { w: "Equanimity", d: "Mental calmness, composure, and evenness of temper.", s: "Jerky Joe embodied the exact opposite of ________; he was truculent and solipsistic to the cuzzies." },
+        { w: "Timorous", d: "Timid, fearful.", s: "After dealing with the cuzzies, Henry and his friends were ________ so they started making up lies so they wouldn’t get in trouble." },
+        { w: "Poignant", d: "Deeply affecting, moving.", s: "Even the truculent and critical potentates of the family raved about the ________ film, Inside Out 3." },
+        { w: "Vicissitude", d: "Event that occurs by chance; a change of circumstances.", s: "The ________ of the day to day life during cuzzie week seem like they are almost part of our quotidian existence." },
+        { w: "Zenith", d: "The highest point, culminating point.", s: "Unfortunately, the nadir of today was when we lost twice in a row, but the ________ will be when you pick this sentence!" },
+        { w: "Maxim", d: "A common saying expressing a principle of conduct.", s: "Miss Manners’s etiquette ________ are both entertaining and instructional." },
+        { w: "Mollify", d: "To soften in temper.", s: "The police officer ________ the angry woman by giving her a warning instead of a ticket." },
+        { w: "Penurious", d: "Miserly, stingy.", s: "Stella complained that her husband’s ________ ways made it impossible to live the lifestyle she felt she deserved." },
+        { w: "Pariah", d: "An outcast; a member of a low caste in southern India.", s: "The ponytail puller was a ________ compared to all the people in the pool." },
+        { w: "Acerbic", d: "Biting, bitter in tone or taste.", s: "Aria was extremely ________ when she brought up Jerome in Cuzzie Class." },
+        { w: "Cantankerous", d: "Bad-tempered, argumentative, and uncooperative.", s: "All the cuzzies were quite ________ and truculent after Sumanta Masa ended our Gimkit." },
+        { w: "Indignant", d: "Feeling or showing anger or annoyance at what is perceived as unfair treatment.", s: "Akshay was ________ when he saw everyone eating chocolate dumplings; it was so unfair!" },
+        { w: "Repugnant", d: "Extremely distasteful; unacceptable or in conflict with.", s: "The Taylor swift painting class was ________, because we painted Taylor in her Speak Now era!" },
+        { w: "Perspicacious", d: "Having or showing an ability to notice and understand things that are difficult or not obvious.", s: "His ________ grandfather had bought the land as an investment, guessing that there might be gold underground." },
+        { w: "Inexplicable", d: "Unable to be explained or accounted for.", s: "An ________ desire for ice cream at two in the morning led to a late night trip." },
+        { w: "Inexorable", d: "Impossible to stop or prevent.", s: "The ________ countdown until the next war in Gaza will have already begun." },
+        { w: "Cacophony", d: "Tremendous noise, disharmonious sound.", s: "One thing we won’t miss about Petunia is how she makes a ________ every time she sees another dog." },
+        { w: "Rhapsodize", d: "To engage in excessive enthusiasm.", s: "Just like Kaiya with her Nutella, Gunj Mama loves to ________ about his interior design." },
+        { w: "Bourgeois", d: "Relating to or typical of the middle class (often used as an insult).", s: "All the fancy old people at the Tearoom thought we were very ________ because we laughed loudly." },
+        { w: "Anathema", d: "A cursed, detested person.", s: "Jerky Joe is an ________ to the cuzzies now— even though he tried to act like a potentate." },
+        { w: "Sycophant", d: "One who flatters for self-gain.", s: "Sumanta Fua, we don’t mean to be ________, but you’re just so smart and cool." },
+        { w: "Vitriolic", d: "Filled with bitter criticism.", s: "Akshay’s brutal review of Pinkberry was filled with ________ comments on why it was a such a bourgeois choice." },
+        { w: "Morose", d: "Gloomy or sullen.", s: "For some reason, everytime the Gouds visit California, the weather changes from sunny to rainy – leaving the cuzzies feeling ________." },
+        { w: "Obstreperous", d: "Noisy, unruly.", s: "Although sometimes the cuzzies can be extremely ________ in cuzzie class, we would like to assure you that we’re ALWAYS focused!" },
+        { w: "Puerile", d: "Juvenile, immature.", s: "The cuzzies made a ________ attempt to sneakily play Boomerang Fu without the adults noticing." },
+        { w: "Pulchritude", d: "Physical beauty.", s: "All the cuzzies enjoyed the ________ of the botanical gardens and the calmness of the nature." },
+        { w: "Querulous", d: "Whiny, complaining.", s: "If the cuzzies don’t get to go to Din Tai Fung, they will become super ________ and their incoming tantrum will be inexorable." },
+        { w: "Usurp", d: "To seize by force, take possession of without right.", s: "We wouldn’t have been surprised if Jerky Joe tried to stage a coup, ________ control of the resort and become the potentate." },
+        { w: "Je ne sais quoi", d: "Something (such as an appealing quality) that cannot be adequately described.", s: "There was a still a certain ________ in the atmosphere that made the tea room extra special." },
+        { w: "Faux pas", d: "A social blunder; saying exactly the wrong thing.", s: "Aakash made a major ________ when he said that people who wear glasses are nerdy in front of all the cousins who have glasses." },
+        { w: "Coup de grâce", d: "A decisive finishing blow, act, or event.", s: "The ________ was when she turned it into an avant garde masterpiece with the signature of Monty Pal." },
+        { w: "Sine qua non", d: "An absolutely necessary component or ingredient.", s: "Disney Day is definitely the ________ of cuzzie week— there’s just a je nais se quoi about it." },
+        { w: "Serendipity", d: "The occurrence and development of events by chance in a happy or beneficial way.", s: "It was pure ________ that a Pinkberry was opening right next to the new Din Tai Fung." },
+        { w: "C'est la vie", d: "That's life; that's how things happen.", s: "Sumanta Fua spent $15,000 dollars on a hair transplant and minimal progress has been made. Oh well, ________." },
+        { w: "Mea culpa", d: "My apology; my error.", s: "We think that we deserve a ________ for the faux pas made last round." },
+        { w: "Recalcitrant", d: "Defiant; unapologetic.", s: "Acerbic Jerky Joe wanted us to thank him for getting us water, but we were ________ and didn’t." },
+        { w: "Ruminate", d: "Contemplate; reflect.", s: "Instead of coming up with a good sentence, we spent most of our time ________ about our school lives." },
+        { w: "Vacillate", d: "Fluctuate, hesitate.", s: "Even though the cuzzies want a quick answer, Sumanta Fua keeps ________ between the two sentences." },
+        { w: "Aggrandize", d: "To increase or make greater.", s: "We don’t mean to ________ how amazing mothers are, but let’s face it, without them, we’d be in serious trouble." },
+        { w: "Arbiter", d: "One who can resolve a dispute, make a decision.", s: "Not to be sycophants or anything, but Sumanta Fua, you’re an AMAZING ________ and you never let our competitions end in a tie!" },
+        { w: "Trite", d: "Not original, overused; lacking originality or freshness.", s: "Her constant praise of them as 'life-changing' felt a bit ________ after the tenth time." },
+        { w: "Virtuoso", d: "One who excels in an art; a highly skilled musical performer.", s: "It is incontrovertible that the cuzzies are all incredible ________ but the linchpin of the band is Sumanta Fua!" },
+        { w: "Venerate", d: "To regard with respect or to honor.", s: "The avant garde Mothers Day song was made to ________ all our benevolent mothers and grandmothers." },
+        { w: "Stolid", d: "Expressing little sensibility, unemotional.", s: "Even though Aria tried to remain ________ when Aarav accused her of having milkshakes in the past, she couldn’t help launching into a polemic." },
+        { w: "Schadenfreude", d: "Pleasure derived by someone from another person's misfortune.", s: "Team chill felt a sense of ________ after team spicy lost the first five rounds." },
+        { w: "Despondent", d: "In low spirits from loss of hope or courage.", s: "Team aka will not be ________ after Reena foi’s decision that we lost." },
+        { w: "Erudite", d: "Having or showing great knowledge or learning.", s: "We adulate our ________ vocab teacher, who has clearly made us clairvoyant and perspicacious." },
+        { w: "Raison d'être", d: "The most important reason or purpose for someone or something's existence.", s: "The cuzzies ________ are their mothers and then their grandmothers." },
+        { w: "Servile", d: "Having or showing an excessive willingness to serve or please others.", s: "The second the girls in front of of us turned around, they became ________ and tried to act cool." },
+        { w: "Ignoramus", d: "An utterly ignorant person.", s: "The ________ Jerky Joe rebuked us for getting our own water." },
+        { w: "Copacetic", d: "Being to one's liking; in excellent order.", s: "Aria assured everyone that everything would be ________ as soon as she establishes her hegemony over the elementary school!" },
+        { w: "Sonorous", d: "Imposingly deep and full (of a voice).", s: "For our cuzzie band to be copacetic, we decided to have one singer with a ________ voice and one with a higher voice." },
+        { w: "Bucolic", d: "Relating to the pleasant aspects of the countryside.", s: "The cuzzies recommend New England as an amazing place to visit because it has a ________ setting." },
+        { w: "Anfractuous", d: "Full of windings and intricate turnings.", s: "They loved the capricious twists and turns of the ________ roller coaster." },
+        { w: "Abase", d: "To humiliate, degrade.", s: "Despite being ________ last round, the super team AJA had a perspicacious premonition that they would win the next one." },
+        { w: "Moppet", d: "A small endearingly sweet child.", s: "Although we would like like to consider Aria as our precious little ________, she exemplifies rancor and becomes truculent when people mess with her." }
+    ];
+
+    // --- QUIZ LOGIC ---
+    let quizData = [];
+    let currentPage = 0;
+    const questionsPerPage = 10;
+    
+    // Generate questions on load
+    function generateQuiz() {
+        // Shuffle the vocab list slightly so it's not always alphabetical if desired, 
+        // but keeping it ordered ensures we see everything. Let's keep existing order 
+        // but generate random distractors.
+        
+        vocabularyDB.forEach((item, index) => {
+            // Type 1: Sentence Completion (from PPT)
+            const q1 = {
+                id: `q${index}_a`,
+                type: 'context',
+                text: item.s.replace(new RegExp(item.w, 'gi'), '________'),
+                correct: item.w,
+                definition: item.d,
+                options: generateOptions(item.w)
+            };
+            
+            // Type 2: Definition Match
+            const q2 = {
+                id: `q${index}_b`,
+                type: 'definition',
+                text: `Which word corresponds to the following definition?<br><em>"${item.d}"</em>`,
+                correct: item.w,
+                definition: item.d,
+                options: generateOptions(item.w)
+            };
+            
+            quizData.push(q1);
+            quizData.push(q2);
+        });
+
+        renderPage();
+    }
+
+    function generateOptions(correctWord) {
+        let options = [correctWord];
+        // Select 3 unique random distractors
+        while (options.length < 4) {
+            const randomItem = vocabularyDB[Math.floor(Math.random() * vocabularyDB.length)];
+            if (!options.includes(randomItem.w)) {
+                options.push(randomItem.w);
+            }
+        }
+        // Shuffle options
+        return options.sort(() => Math.random() - 0.5);
+    }
+
+    function renderPage() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = '';
+        
+        const start = currentPage * questionsPerPage;
+        const end = Math.min(start + questionsPerPage, quizData.length);
+        const pageQuestions = quizData.slice(start, end);
+
+        pageQuestions.forEach((q, i) => {
+            const absoluteNum = start + i + 1;
+            const badgeClass = q.type === 'context' ? 'badge-context' : 'badge-def';
+            const badgeText = q.type === 'context' ? 'Sentence Completion' : 'Definition Match';
+
+            const div = document.createElement('div');
+            div.className = 'question-block';
+            div.id = `block-${absoluteNum}`;
+            
+            let html = `
+                <span class="question-badge ${badgeClass}">${badgeText}</span>
+                <div class="question-text">${absoluteNum}. ${q.text}</div>
+                <div class="options-grid">
+            `;
+            
+            q.options.forEach(opt => {
+                html += `
+                    <label class="option-label">
+                        <input type="radio" name="q_${absoluteNum}" value="${opt}" onclick="enableSubmit()"> 
+                        ${opt}
+                    </label>
+                `;
+            });
+
+            html += `</div>
+                <div class="explanation" id="exp-${absoluteNum}">
+                    <strong>Answer: ${q.correct}</strong><br>
+                    ${q.definition}
+                </div>`;
+            
+            div.innerHTML = html;
+            container.appendChild(div);
+        });
+
+        // Update UI stats
+        const totalPages = Math.ceil(quizData.length / questionsPerPage);
+        document.getElementById('stats').innerText = `Page ${currentPage + 1} of ${totalPages}`;
+        
+        // Progress bar
+        const progress = ((currentPage + 1) / totalPages) * 100;
+        document.getElementById('progress').style.width = `${progress}%`;
+
+        // Button states
+        document.getElementById('btn-prev').disabled = currentPage === 0;
+        document.getElementById('btn-next').disabled = currentPage === totalPages - 1;
+        
+        // Hide/Show Check Answer based on page
+        const submitBtn = document.getElementById('btn-submit');
+        submitBtn.style.display = 'block';
+        submitBtn.innerText = 'Check Page Answers';
+        submitBtn.disabled = false;
+    }
+
+    function enableSubmit() {
+        // Optional: enable logic if needed
+    }
+
+    function changePage(delta) {
+        currentPage += delta;
+        renderPage();
+        window.scrollTo(0, 0);
+    }
+
+    function gradeCurrentPage() {
+        const start = currentPage * questionsPerPage;
+        const end = Math.min(start + questionsPerPage, quizData.length);
+        let score = 0;
+        let answered = 0;
+
+        for (let i = start; i < end; i++) {
+            const absoluteNum = i + 1;
+            const q = quizData[i];
+            const block = document.getElementById(`block-${absoluteNum}`);
+            const exp = document.getElementById(`exp-${absoluteNum}`);
+            const selected = document.querySelector(`input[name="q_${absoluteNum}"]:checked`);
+            
+            // Reset styles
+            block.classList.remove('correct', 'incorrect');
+            
+            if (selected) {
+                answered++;
+                if (selected.value === q.correct) {
+                    score++;
+                    block.classList.add('correct');
+                } else {
+                    block.classList.add('incorrect');
+                }
+            } else {
+                block.classList.add('incorrect'); // Wrong if skipped
+            }
+            
+            // Show explanation
+            exp.style.display = 'block';
+            
+            // Disable inputs
+            const inputs = document.querySelectorAll(`input[name="q_${absoluteNum}"]`);
+            inputs.forEach(inp => inp.disabled = true);
+        }
+
+        document.getElementById('btn-submit').innerText = `Page Score: ${score}/${end - start}`;
+        document.getElementById('btn-submit').disabled = true;
+    }
+
+    // Init
+    window.onload = generateQuiz;
+
+</script>
+
+</body>
+</html>
