@@ -12,6 +12,7 @@
             --warning: #f1c40f;
             --danger: #e74c3c;
             --light: #ecf0f1;
+            --purple: #8e44ad;
         }
 
         body {
@@ -54,12 +55,13 @@
             border-color: var(--warning);
             background: #fff9c4;
             transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
         }
 
         .player-name { font-size: 0.9em; color: #7f8c8d; font-weight: bold; text-transform: uppercase; }
         .player-score { font-size: 1.8em; color: var(--primary); font-weight: 800; }
 
-        /* --- QUIZ CARD --- */
+        /* --- GAME CONTAINER --- */
         .game-card {
             background: white;
             width: 100%;
@@ -67,7 +69,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             overflow: hidden;
-            display: flex;
+            display: flex; /* Flex to toggle visibility */
             flex-direction: column;
         }
 
@@ -94,9 +96,7 @@
             opacity: 0.8;
         }
 
-        .card-body {
-            padding: 30px;
-        }
+        .card-body { padding: 30px; }
 
         .question-text {
             font-size: 1.3em;
@@ -107,10 +107,7 @@
         }
 
         /* --- OPTIONS --- */
-        .options-list {
-            display: grid;
-            gap: 12px;
-        }
+        .options-list { display: grid; gap: 12px; }
 
         .option-btn {
             background: white;
@@ -121,34 +118,16 @@
             font-size: 1em;
             cursor: pointer;
             transition: all 0.2s;
-            position: relative;
         }
 
-        .option-btn:hover:not(:disabled) {
-            border-color: var(--accent);
-            background: #f7f9fa;
-        }
-
-        .option-btn.selected {
-            border-color: var(--accent);
-            background: #e3f2fd;
-        }
-
-        .option-btn.correct {
-            border-color: var(--success);
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .option-btn.wrong {
-            border-color: var(--danger);
-            background: #f8d7da;
-            color: #721c24;
-        }
+        .option-btn:hover:not(:disabled) { border-color: var(--accent); background: #f7f9fa; }
+        .option-btn.selected { border-color: var(--accent); background: #e3f2fd; }
+        .option-btn.correct { border-color: var(--success); background: #d4edda; color: #155724; }
+        .option-btn.wrong { border-color: var(--danger); background: #f8d7da; color: #721c24; }
 
         /* --- FEEDBACK & AWARD SECTION --- */
         .feedback-section {
-            display: none; /* Hidden until answered */
+            display: none;
             margin-top: 25px;
             border-top: 1px solid #eee;
             padding-top: 20px;
@@ -163,16 +142,8 @@
             color: #555;
         }
 
-        .award-section {
-            text-align: center;
-        }
-
-        .award-title {
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 15px;
-            display: block;
-        }
+        .award-section { text-align: center; }
+        .award-title { font-weight: bold; color: var(--primary); margin-bottom: 15px; display: block; }
 
         .award-buttons {
             display: flex;
@@ -194,13 +165,71 @@
 
         .award-btn:hover { transform: translateY(-2px); background: #34495e; }
         .award-btn.no-point { background: #95a5a6; }
-        
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        /* --- END GAME CONTROLS --- */
+        .footer-controls {
+            margin-top: 20px;
+            text-align: center;
         }
 
-        /* --- CONTROLS --- */
+        .end-game-btn {
+            background: transparent;
+            color: #7f8c8d;
+            border: 2px solid #bdc3c7;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .end-game-btn:hover { background: #fff; color: var(--danger); border-color: var(--danger); }
+
+        /* --- RESULTS SCREEN --- */
+        .results-screen {
+            display: none;
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .winner-trophy { font-size: 4em; margin-bottom: 20px; display: block; }
+        
+        .winner-title {
+            color: var(--warning);
+            font-size: 2.5em;
+            font-weight: 800;
+            text-shadow: 2px 2px 0px #d35400;
+            margin: 0 0 10px 0;
+        }
+
+        .celebratory-phrase {
+            font-size: 1.4em;
+            color: var(--primary);
+            font-style: italic;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .highlight-word { color: var(--purple); font-weight: bold; }
+
+        .final-tally-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px dashed #eee;
+        }
+
+        .tally-item { background: #f8f9fa; padding: 15px; border-radius: 8px; }
+        .tally-name { display: block; font-weight: bold; color: #7f8c8d; }
+        .tally-score { font-size: 1.5em; font-weight: bold; color: var(--primary); }
+
         .check-btn {
             margin-top: 20px;
             width: 100%;
@@ -213,62 +242,37 @@
             font-weight: bold;
             cursor: pointer;
         }
-        
         .check-btn:disabled { background: #bdc3c7; cursor: not-allowed; }
 
-        .hidden { display: none; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
     </style>
 </head>
 <body>
 
-    <div class="scoreboard">
-        <div class="player-card" id="card-Jaya">
-            <div class="player-name">Jaya</div>
-            <div class="player-score" id="score-Jaya">0</div>
-        </div>
-        <div class="player-card" id="card-Kaiya">
-            <div class="player-name">Kaiya</div>
-            <div class="player-score" id="score-Kaiya">0</div>
-        </div>
-        <div class="player-card" id="card-Aarav">
-            <div class="player-name">Aarav</div>
-            <div class="player-score" id="score-Aarav">0</div>
-        </div>
-        <div class="player-card" id="card-Aria">
-            <div class="player-name">Aria</div>
-            <div class="player-score" id="score-Aria">0</div>
-        </div>
-        <div class="player-card" id="card-Aakash">
-            <div class="player-name">Aakash</div>
-            <div class="player-score" id="score-Aakash">0</div>
-        </div>
-        <div class="player-card" id="card-Akshay">
-            <div class="player-name">Akshay</div>
-            <div class="player-score" id="score-Akshay">0</div>
-        </div>
+    <div class="scoreboard" id="live-scoreboard">
+        <div class="player-card" id="card-Jaya"><div class="player-name">Jaya</div><div class="player-score" id="score-Jaya">0</div></div>
+        <div class="player-card" id="card-Kaiya"><div class="player-name">Kaiya</div><div class="player-score" id="score-Kaiya">0</div></div>
+        <div class="player-card" id="card-Aarav"><div class="player-name">Aarav</div><div class="player-score" id="score-Aarav">0</div></div>
+        <div class="player-card" id="card-Aria"><div class="player-name">Aria</div><div class="player-score" id="score-Aria">0</div></div>
+        <div class="player-card" id="card-Aakash"><div class="player-name">Aakash</div><div class="player-score" id="score-Aakash">0</div></div>
+        <div class="player-card" id="card-Akshay"><div class="player-name">Akshay</div><div class="player-score" id="score-Akshay">0</div></div>
     </div>
 
-    <div class="game-card">
+    <div class="game-card" id="game-card">
         <div class="card-header">
             <span class="badge" id="q-type-badge">Context</span>
             <div class="progress-text" id="q-progress">Question 1 of 324</div>
         </div>
 
         <div class="card-body">
-            <div class="question-text" id="q-text">
-                Loading question...
-            </div>
-
-            <div class="options-list" id="options-container">
-                </div>
-
+            <div class="question-text" id="q-text">Loading...</div>
+            <div class="options-list" id="options-container"></div>
             <button class="check-btn" id="check-btn" onclick="submitAnswer()">Reveal Answer</button>
 
             <div class="feedback-section" id="feedback-area">
-                <div class="definition-box" id="definition-text">
-                    </div>
-
+                <div class="definition-box" id="definition-text"></div>
                 <div class="award-section">
                     <span class="award-title">Who answered correctly?</span>
                     <div class="award-buttons">
@@ -283,6 +287,27 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="footer-controls" id="footer-controls">
+        <button class="end-game-btn" onclick="endGame()">Stop Test & See Results</button>
+    </div>
+
+    <div class="results-screen" id="results-screen">
+        <div class="winner-trophy">🏆</div>
+        <h1 class="winner-title" id="winner-name">WINNER NAME</h1>
+        <p class="celebratory-phrase" id="celebratory-msg">Loading celebration...</p>
+        
+        <div class="final-tally-grid">
+            <div class="tally-item"><span class="tally-name">Jaya</span><span class="tally-score" id="final-Jaya">0</span></div>
+            <div class="tally-item"><span class="tally-name">Kaiya</span><span class="tally-score" id="final-Kaiya">0</span></div>
+            <div class="tally-item"><span class="tally-name">Aarav</span><span class="tally-score" id="final-Aarav">0</span></div>
+            <div class="tally-item"><span class="tally-name">Aria</span><span class="tally-score" id="final-Aria">0</span></div>
+            <div class="tally-item"><span class="tally-name">Aakash</span><span class="tally-score" id="final-Aakash">0</span></div>
+            <div class="tally-item"><span class="tally-name">Akshay</span><span class="tally-score" id="final-Akshay">0</span></div>
+        </div>
+        
+        <button class="check-btn" onclick="location.reload()" style="margin-top:30px;">Play Again</button>
     </div>
 
 <script>
@@ -452,23 +477,14 @@
         { w: "Moppet", d: "A small endearingly sweet child.", s: "Although we would like like to consider Aria as our precious little ________, she exemplifies rancor and becomes truculent when people mess with her." }
     ];
 
-    // --- STATE MANAGEMENT ---
+    // --- STATE ---
     let quizData = [];
     let currentIndex = 0;
-    let scores = {
-        Jaya: 0,
-        Kaiya: 0,
-        Aarav: 0,
-        Aria: 0,
-        Aakash: 0,
-        Akshay: 0
-    };
+    let scores = { Jaya: 0, Kaiya: 0, Aarav: 0, Aria: 0, Aakash: 0, Akshay: 0 };
 
-    // --- INITIALIZATION ---
+    // --- INIT ---
     function initQuiz() {
-        // Generate question set
         vocabularyDB.forEach((item, index) => {
-            // Type 1: Context
             quizData.push({
                 type: 'context',
                 text: item.s.replace(new RegExp(item.w, 'gi'), '________'),
@@ -476,7 +492,6 @@
                 definition: item.d,
                 options: generateOptions(item.w)
             });
-            // Type 2: Definition
             quizData.push({
                 type: 'definition',
                 text: `Which word means: "${item.d}"?`,
@@ -485,8 +500,6 @@
                 options: generateOptions(item.w)
             });
         });
-        
-        // Render first question
         renderQuestion();
     }
 
@@ -494,67 +507,48 @@
         let options = [correctWord];
         while (options.length < 4) {
             const randomItem = vocabularyDB[Math.floor(Math.random() * vocabularyDB.length)];
-            if (!options.includes(randomItem.w)) {
-                options.push(randomItem.w);
-            }
+            if (!options.includes(randomItem.w)) { options.push(randomItem.w); }
         }
         return options.sort(() => Math.random() - 0.5);
     }
 
-    // --- UI RENDERING ---
+    // --- RENDER GAME ---
     function renderQuestion() {
         const q = quizData[currentIndex];
-        
-        // Update Header
         document.getElementById('q-type-badge').innerText = q.type === 'context' ? 'Fill in the Blank' : 'Definition Match';
         document.getElementById('q-progress').innerText = `Question ${currentIndex + 1} of ${quizData.length}`;
-        
-        // Update Text
         document.getElementById('q-text').innerHTML = q.text;
 
-        // Render Options
         const container = document.getElementById('options-container');
         container.innerHTML = '';
-        
         q.options.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
             btn.innerText = opt;
-            btn.onclick = () => selectOption(btn, opt);
+            btn.onclick = () => selectOption(btn);
             container.appendChild(btn);
         });
 
-        // Reset state
         document.getElementById('check-btn').disabled = true;
         document.getElementById('feedback-area').style.display = 'none';
         document.getElementById('check-btn').style.display = 'block';
     }
 
-    let selectedOption = null;
-
-    function selectOption(btn, value) {
-        // Deselect others
+    function selectOption(btn) {
         document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-        // Select this
         btn.classList.add('selected');
-        selectedOption = value;
         document.getElementById('check-btn').disabled = false;
     }
 
     function submitAnswer() {
         const q = quizData[currentIndex];
         const buttons = document.querySelectorAll('.option-btn');
-        
         buttons.forEach(btn => {
-            btn.disabled = true; // Lock buttons
-            if (btn.innerText === q.correct) {
-                btn.classList.add('correct');
-            } else if (btn.classList.contains('selected')) {
-                btn.classList.add('wrong');
-            }
+            btn.disabled = true;
+            if (btn.innerText === q.correct) { btn.classList.add('correct'); }
+            else if (btn.classList.contains('selected')) { btn.classList.add('wrong'); }
         });
 
-        // Show Feedback
         document.getElementById('definition-text').innerHTML = `<strong>Definition:</strong> ${q.definition}`;
         document.getElementById('feedback-area').style.display = 'block';
         document.getElementById('check-btn').style.display = 'none';
@@ -563,35 +557,67 @@
     function awardPoint(winner) {
         if (winner) {
             scores[winner]++;
-            updateScoreboard(winner);
+            updateScoreboard();
         }
-        
-        // Move to next
         if (currentIndex < quizData.length - 1) {
             currentIndex++;
             renderQuestion();
         } else {
-            alert("Quiz Complete!");
+            endGame();
         }
     }
 
-    function updateScoreboard(winnerName) {
-        // Update text
-        document.getElementById(`score-${winnerName}`).innerText = scores[winnerName];
-        
-        // Highlight leader
+    function updateScoreboard() {
         const maxScore = Math.max(...Object.values(scores));
-        
         Object.keys(scores).forEach(name => {
+            document.getElementById(`score-${name}`).innerText = scores[name];
             const card = document.getElementById(`card-${name}`);
             card.classList.remove('lead');
-            if (scores[name] > 0 && scores[name] === maxScore) {
-                card.classList.add('lead');
-            }
+            if (scores[name] > 0 && scores[name] === maxScore) { card.classList.add('lead'); }
         });
     }
 
-    // Start
+    // --- END GAME LOGIC ---
+    function endGame() {
+        // Hide Game UI
+        document.getElementById('game-card').style.display = 'none';
+        document.getElementById('footer-controls').style.display = 'none';
+        document.getElementById('live-scoreboard').style.display = 'none';
+
+        // Calculate Winner
+        const maxScore = Math.max(...Object.values(scores));
+        let winners = Object.keys(scores).filter(name => scores[name] === maxScore);
+        
+        // Show Results Screen
+        const resultsScreen = document.getElementById('results-screen');
+        resultsScreen.style.display = 'block';
+        
+        // Populate Winner Text
+        const winnerText = winners.length > 1 ? "TIE GAME!" : `${winners[0]} WINS!`;
+        document.getElementById('winner-name').innerText = winnerText;
+
+        // Generate Celebratory Phrase
+        const phrase = generateCelebration(winners.join(" and "));
+        document.getElementById('celebratory-msg').innerHTML = phrase;
+
+        // Populate Final Tally
+        Object.keys(scores).forEach(name => {
+            document.getElementById(`final-${name}`).innerText = scores[name];
+        });
+    }
+
+    function generateCelebration(name) {
+        const phrases = [
+            `Truly a <span class="highlight-word">perspicacious</span> performance! ${name} is the quintessential <span class="highlight-word">potentate</span> of vocabulary!`,
+            `An <span class="highlight-word">incontrovertible</span> victory! ${name} has reached the <span class="highlight-word">zenith</span> of <span class="highlight-word">erudite</span> glory!`,
+            `With <span class="highlight-word">sagacity</span> and panache, ${name} has established <span class="highlight-word">hegemony</span> over the cousins!`,
+            `The <span class="highlight-word">inimitable</span> ${name} has pulled off a <span class="highlight-word">coup</span> of massive proportions!`,
+            `It is no <span class="highlight-word">hyperbole</span> to say that ${name} is a true <span class="highlight-word">virtuoso</span> of words!`,
+            `A <span class="highlight-word">preternatural</span> display of intelligence! We must <span class="highlight-word">venerate</span> our new champion, ${name}!`
+        ];
+        return phrases[Math.floor(Math.random() * phrases.length)];
+    }
+
     window.onload = initQuiz;
 
 </script>
