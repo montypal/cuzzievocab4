@@ -30,25 +30,26 @@
         .scoreboard {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             background: white;
             padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 900px;
+            max-width: 950px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
         .player-card {
             background: var(--light);
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 8px;
             text-align: center;
-            min-width: 80px;
+            min-width: 90px;
             border: 2px solid transparent;
             transition: all 0.3s;
+            position: relative;
         }
 
         .player-card.lead {
@@ -56,12 +57,14 @@
             background: #fff9c4;
             transform: scale(1.05);
             box-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+            z-index: 10;
         }
 
-        .player-name { font-size: 0.9em; color: #7f8c8d; font-weight: bold; text-transform: uppercase; }
-        .player-score { font-size: 1.8em; color: var(--primary); font-weight: 800; }
+        .player-name { font-size: 0.85em; color: #7f8c8d; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;}
+        .player-score { font-size: 1.4em; color: var(--primary); font-weight: 800; line-height: 1; }
+        .player-pct { font-size: 0.8em; color: var(--accent); font-weight: 600; margin-top: 4px; }
 
-        /* --- GAME CONTAINER --- */
+        /* --- GAME CARD --- */
         .game-card {
             background: white;
             width: 100%;
@@ -69,7 +72,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             overflow: hidden;
-            display: flex; /* Flex to toggle visibility */
+            display: flex;
             flex-direction: column;
         }
 
@@ -90,12 +93,7 @@
             letter-spacing: 1px;
         }
 
-        .progress-text {
-            margin-top: 10px;
-            font-size: 0.9em;
-            opacity: 0.8;
-        }
-
+        .progress-text { margin-top: 10px; font-size: 0.9em; opacity: 0.8; }
         .card-body { padding: 30px; }
 
         .question-text {
@@ -145,145 +143,109 @@
         .award-section { text-align: center; }
         .award-title { font-weight: bold; color: var(--primary); margin-bottom: 15px; display: block; }
 
-        .award-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+        /* New Grid Layout for Recording Answers */
+        .award-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .award-btn {
-            padding: 10px 15px;
+        .player-control {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .control-name { font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #7f8c8d; }
+        
+        .btn-group { display: flex; gap: 5px; width: 100%; }
+        
+        .stat-btn {
+            flex: 1;
+            padding: 8px 0;
             border: none;
-            border-radius: 6px;
-            background: var(--primary);
-            color: white;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+            color: white;
             transition: transform 0.1s;
         }
-
-        .award-btn:hover { transform: translateY(-2px); background: #34495e; }
-        .award-btn.no-point { background: #95a5a6; }
-
-        /* --- END GAME CONTROLS --- */
-        .footer-controls {
-            margin-top: 20px;
-            text-align: center;
+        
+        .stat-btn:active { transform: scale(0.95); }
+        .btn-yes { background-color: var(--success); }
+        .btn-no { background-color: var(--danger); }
+        .btn-skip { 
+            width: 100%; padding: 12px; background: #95a5a6; color: white; 
+            border: none; border-radius: 6px; cursor: pointer; font-weight: bold;
         }
 
+        /* --- END GAME --- */
+        .footer-controls { margin-top: 20px; text-align: center; }
         .end-game-btn {
-            background: transparent;
-            color: #7f8c8d;
-            border: 2px solid #bdc3c7;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: bold;
+            background: transparent; color: #7f8c8d; border: 2px solid #bdc3c7;
+            padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold;
         }
         .end-game-btn:hover { background: #fff; color: var(--danger); border-color: var(--danger); }
 
-        /* --- RESULTS SCREEN --- */
+        /* --- RESULTS --- */
         .results-screen {
             display: none;
-            background: white;
-            width: 100%;
-            max-width: 800px;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
+            background: white; width: 100%; max-width: 800px;
+            border-radius: 15px; padding: 40px; text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .winner-trophy { font-size: 4em; margin-bottom: 20px; display: block; }
-        
-        .winner-title {
-            color: var(--warning);
-            font-size: 2.5em;
-            font-weight: 800;
-            text-shadow: 2px 2px 0px #d35400;
-            margin: 0 0 10px 0;
-        }
-
-        .celebratory-phrase {
-            font-size: 1.4em;
-            color: var(--primary);
-            font-style: italic;
-            margin-bottom: 30px;
-            line-height: 1.4;
-        }
-
+        .winner-title { color: var(--warning); font-size: 2.5em; font-weight: 800; margin: 0 0 10px 0; }
         .highlight-word { color: var(--purple); font-weight: bold; }
-
+        
         .final-tally-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 2px dashed #eee;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px; margin-top: 30px; padding-top: 30px; border-top: 2px dashed #eee;
         }
-
         .tally-item { background: #f8f9fa; padding: 15px; border-radius: 8px; }
-        .tally-name { display: block; font-weight: bold; color: #7f8c8d; }
-        .tally-score { font-size: 1.5em; font-weight: bold; color: var(--primary); }
+        .tally-score { display: block; font-size: 1.2em; font-weight: bold; color: var(--primary); }
+        .tally-detail { font-size: 0.8em; color: #95a5a6; }
 
         .check-btn {
-            margin-top: 20px;
-            width: 100%;
-            padding: 15px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
+            margin-top: 20px; width: 100%; padding: 15px; background: var(--accent);
+            color: white; border: none; border-radius: 8px; font-size: 1.1em;
+            font-weight: bold; cursor: pointer;
         }
         .check-btn:disabled { background: #bdc3c7; cursor: not-allowed; }
 
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
     </style>
 </head>
 <body>
 
     <div class="scoreboard" id="live-scoreboard">
-        <div class="player-card" id="card-Jaya"><div class="player-name">Jaya</div><div class="player-score" id="score-Jaya">0</div></div>
-        <div class="player-card" id="card-Kaiya"><div class="player-name">Kaiya</div><div class="player-score" id="score-Kaiya">0</div></div>
-        <div class="player-card" id="card-Aarav"><div class="player-name">Aarav</div><div class="player-score" id="score-Aarav">0</div></div>
-        <div class="player-card" id="card-Aria"><div class="player-name">Aria</div><div class="player-score" id="score-Aria">0</div></div>
-        <div class="player-card" id="card-Aakash"><div class="player-name">Aakash</div><div class="player-score" id="score-Aakash">0</div></div>
-        <div class="player-card" id="card-Akshay"><div class="player-name">Akshay</div><div class="player-score" id="score-Akshay">0</div></div>
-    </div>
+        </div>
 
     <div class="game-card" id="game-card">
         <div class="card-header">
             <span class="badge" id="q-type-badge">Context</span>
-            <div class="progress-text" id="q-progress">Question 1 of 324</div>
+            <div class="progress-text" id="q-progress">Question 1</div>
         </div>
 
         <div class="card-body">
             <div class="question-text" id="q-text">Loading...</div>
             <div class="options-list" id="options-container"></div>
-            <button class="check-btn" id="check-btn" onclick="submitAnswer()">Reveal Answer</button>
+            <button class="check-btn" id="check-btn" onclick="revealAnswer()">Reveal Answer</button>
 
             <div class="feedback-section" id="feedback-area">
                 <div class="definition-box" id="definition-text"></div>
+                
                 <div class="award-section">
-                    <span class="award-title">Who answered correctly?</span>
-                    <div class="award-buttons">
-                        <button class="award-btn" onclick="awardPoint('Jaya')">Jaya</button>
-                        <button class="award-btn" onclick="awardPoint('Kaiya')">Kaiya</button>
-                        <button class="award-btn" onclick="awardPoint('Aarav')">Aarav</button>
-                        <button class="award-btn" onclick="awardPoint('Aria')">Aria</button>
-                        <button class="award-btn" onclick="awardPoint('Aakash')">Aakash</button>
-                        <button class="award-btn" onclick="awardPoint('Akshay')">Akshay</button>
-                        <button class="award-btn no-point" onclick="awardPoint(null)">No Points / Next</button>
-                    </div>
+                    <span class="award-title">Record Result:</span>
+                    <div class="award-grid" id="award-controls">
+                        </div>
+                    <button class="btn-skip" onclick="nextQuestion()">No Attempt / Next Question ➡</button>
                 </div>
             </div>
         </div>
@@ -294,20 +256,14 @@
     </div>
 
     <div class="results-screen" id="results-screen">
-        <div class="winner-trophy">🏆</div>
+        <div style="font-size:4em;">🏆</div>
         <h1 class="winner-title" id="winner-name">WINNER NAME</h1>
-        <p class="celebratory-phrase" id="celebratory-msg">Loading celebration...</p>
+        <p style="font-size:1.4em; color:#2c3e50; font-style:italic; margin-bottom:30px;" id="celebratory-msg"></p>
         
-        <div class="final-tally-grid">
-            <div class="tally-item"><span class="tally-name">Jaya</span><span class="tally-score" id="final-Jaya">0</span></div>
-            <div class="tally-item"><span class="tally-name">Kaiya</span><span class="tally-score" id="final-Kaiya">0</span></div>
-            <div class="tally-item"><span class="tally-name">Aarav</span><span class="tally-score" id="final-Aarav">0</span></div>
-            <div class="tally-item"><span class="tally-name">Aria</span><span class="tally-score" id="final-Aria">0</span></div>
-            <div class="tally-item"><span class="tally-name">Aakash</span><span class="tally-score" id="final-Aakash">0</span></div>
-            <div class="tally-item"><span class="tally-name">Akshay</span><span class="tally-score" id="final-Akshay">0</span></div>
-        </div>
+        <div class="final-tally-grid" id="final-tally-container">
+            </div>
         
-        <button class="check-btn" onclick="location.reload()" style="margin-top:30px;">Play Again</button>
+        <button class="check-btn" onclick="location.reload()" style="margin-top:30px;">Play Again (New Shuffle)</button>
     </div>
 
 <script>
@@ -480,11 +436,17 @@
     // --- STATE ---
     let quizData = [];
     let currentIndex = 0;
-    let scores = { Jaya: 0, Kaiya: 0, Aarav: 0, Aria: 0, Aakash: 0, Akshay: 0 };
+    // Track stats: attempts and correct
+    let players = ['Jaya', 'Kaiya', 'Aarav', 'Aria', 'Aakash', 'Akshay'];
+    let stats = {};
+    players.forEach(p => stats[p] = { correct: 0, attempts: 0 });
 
     // --- INIT ---
     function initQuiz() {
-        vocabularyDB.forEach((item, index) => {
+        quizData = [];
+        
+        // Generate all questions
+        vocabularyDB.forEach((item) => {
             quizData.push({
                 type: 'context',
                 text: item.s.replace(new RegExp(item.w, 'gi'), '________'),
@@ -500,7 +462,21 @@
                 options: generateOptions(item.w)
             });
         });
+
+        // Shuffle Questions
+        shuffleArray(quizData);
+        
+        // Render Initial UI
+        initScoreboard();
+        initAwardControls();
         renderQuestion();
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 
     function generateOptions(correctWord) {
@@ -512,8 +488,44 @@
         return options.sort(() => Math.random() - 0.5);
     }
 
-    // --- RENDER GAME ---
+    // --- UI SETUP ---
+    function initScoreboard() {
+        const board = document.getElementById('live-scoreboard');
+        board.innerHTML = '';
+        players.forEach(p => {
+            board.innerHTML += `
+                <div class="player-card" id="card-${p}">
+                    <div class="player-name">${p}</div>
+                    <div class="player-score" id="score-${p}">0</div>
+                    <div class="player-pct" id="pct-${p}">0%</div>
+                </div>
+            `;
+        });
+    }
+
+    function initAwardControls() {
+        const container = document.getElementById('award-controls');
+        container.innerHTML = '';
+        players.forEach(p => {
+            container.innerHTML += `
+                <div class="player-control">
+                    <span class="control-name">${p}</span>
+                    <div class="btn-group">
+                        <button class="stat-btn btn-yes" onclick="recordResult('${p}', true)">✅</button>
+                        <button class="stat-btn btn-no" onclick="recordResult('${p}', false)">❌</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // --- GAME LOOP ---
     function renderQuestion() {
+        if (currentIndex >= quizData.length) {
+            endGame();
+            return;
+        }
+
         const q = quizData[currentIndex];
         document.getElementById('q-type-badge').innerText = q.type === 'context' ? 'Fill in the Blank' : 'Definition Match';
         document.getElementById('q-progress').innerText = `Question ${currentIndex + 1} of ${quizData.length}`;
@@ -540,7 +552,7 @@
         document.getElementById('check-btn').disabled = false;
     }
 
-    function submitAnswer() {
+    function revealAnswer() {
         const q = quizData[currentIndex];
         const buttons = document.querySelectorAll('.option-btn');
         buttons.forEach(btn => {
@@ -554,55 +566,91 @@
         document.getElementById('check-btn').style.display = 'none';
     }
 
-    function awardPoint(winner) {
-        if (winner) {
-            scores[winner]++;
-            updateScoreboard();
-        }
-        if (currentIndex < quizData.length - 1) {
-            currentIndex++;
-            renderQuestion();
-        } else {
-            endGame();
-        }
+    function recordResult(player, isCorrect) {
+        stats[player].attempts++;
+        if (isCorrect) stats[player].correct++;
+        
+        updateScoreboard();
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        renderQuestion();
     }
 
     function updateScoreboard() {
-        const maxScore = Math.max(...Object.values(scores));
-        Object.keys(scores).forEach(name => {
-            document.getElementById(`score-${name}`).innerText = scores[name];
-            const card = document.getElementById(`card-${name}`);
+        // Find best % (min 1 attempt)
+        let maxPct = -1;
+        
+        players.forEach(p => {
+            const s = stats[p];
+            const pct = s.attempts === 0 ? 0 : Math.round((s.correct / s.attempts) * 100);
+            
+            document.getElementById(`score-${p}`).innerText = s.correct;
+            document.getElementById(`pct-${p}`).innerText = `${pct}%`;
+            
+            if (s.attempts > 0 && pct > maxPct) maxPct = pct;
+        });
+
+        // Highlight leaders
+        players.forEach(p => {
+            const s = stats[p];
+            const pct = s.attempts === 0 ? 0 : Math.round((s.correct / s.attempts) * 100);
+            const card = document.getElementById(`card-${p}`);
+            
             card.classList.remove('lead');
-            if (scores[name] > 0 && scores[name] === maxScore) { card.classList.add('lead'); }
+            if (s.attempts > 0 && pct === maxPct) {
+                card.classList.add('lead');
+            }
         });
     }
 
-    // --- END GAME LOGIC ---
+    // --- END GAME ---
     function endGame() {
-        // Hide Game UI
         document.getElementById('game-card').style.display = 'none';
         document.getElementById('footer-controls').style.display = 'none';
         document.getElementById('live-scoreboard').style.display = 'none';
-
-        // Calculate Winner
-        const maxScore = Math.max(...Object.values(scores));
-        let winners = Object.keys(scores).filter(name => scores[name] === maxScore);
         
-        // Show Results Screen
         const resultsScreen = document.getElementById('results-screen');
         resultsScreen.style.display = 'block';
+
+        // Calculate Winner (Highest %, tie-break by total correct)
+        let maxPct = -1;
         
+        players.forEach(p => {
+            const s = stats[p];
+            const pct = s.attempts === 0 ? 0 : (s.correct / s.attempts);
+            if (pct > maxPct) maxPct = pct;
+        });
+
+        // Find all with maxPct
+        let winners = players.filter(p => {
+            const s = stats[p];
+            const pct = s.attempts === 0 ? 0 : (s.correct / s.attempts);
+            return pct === maxPct && s.attempts > 0;
+        });
+
         // Populate Winner Text
-        const winnerText = winners.length > 1 ? "TIE GAME!" : `${winners[0]} WINS!`;
+        const winnerText = winners.length === 0 ? "No Points Scored!" :
+                           winners.length > 1 ? "TIE GAME!" : `${winners[0]} WINS!`;
+        
         document.getElementById('winner-name').innerText = winnerText;
+        document.getElementById('celebratory-msg').innerHTML = winners.length > 0 ? generateCelebration(winners.join(" and ")) : "Time to hit the books!";
 
-        // Generate Celebratory Phrase
-        const phrase = generateCelebration(winners.join(" and "));
-        document.getElementById('celebratory-msg').innerHTML = phrase;
-
-        // Populate Final Tally
-        Object.keys(scores).forEach(name => {
-            document.getElementById(`final-${name}`).innerText = scores[name];
+        // Final Tally Table
+        const tallyContainer = document.getElementById('final-tally-container');
+        tallyContainer.innerHTML = '';
+        players.forEach(p => {
+            const s = stats[p];
+            const pct = s.attempts === 0 ? 0 : Math.round((s.correct / s.attempts) * 100);
+            tallyContainer.innerHTML += `
+                <div class="tally-item">
+                    <span style="display:block; font-weight:bold; color:#7f8c8d;">${p}</span>
+                    <span class="tally-score">${pct}%</span>
+                    <span class="tally-detail">(${s.correct}/${s.attempts})</span>
+                </div>
+            `;
         });
     }
 
